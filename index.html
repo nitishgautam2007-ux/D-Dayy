@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Will You Be My Valentine?</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+            touch-action: manipulation;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffafcc, #ffc8dd, #cdb4db, #a2d2ff);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            padding: 15px;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        /* Floating hearts - mobile optimized */
+        .heart {
+            position: absolute;
+            font-size: 18px;
+            color: rgba(255, 0, 0, 0.7);
+            animation: float 6s ease-in-out infinite;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.7;
+            }
+            50% { 
+                transform: translateY(-80px) rotate(180deg);
+                opacity: 1;
+            }
+        }
+        
+        .container {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            padding: 30px 25px;
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 30px 30px;
+            animation: sparkle 20s linear infinite;
+            z-index: -1;
+        }
+        
+        @keyframes sparkle {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        h1 {
+            color: #ff4d6d;
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 0px rgba(255, 77, 109, 0.2);
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+        
+        .message {
+            font-size: 1.2rem;
+            color: #555;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            padding: 0 10px;
+        }
+        
+        .buttons-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 20px 25px;
+            font-size: 1.4rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-weight: bold;
+            letter-spacing: 1px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-yes {
+            background: linear-gradient(to right, #ff4d6d, #ff8fa3);
+            color: white;
+            z-index: 2;
+        }
+        
+        .btn-no {
+            background: linear-gradient(to right, #4361ee, #3a0ca3);
+            color: white;
+            position: relative;
+        }
+        
+        .btn-yes:active {
+            background: linear-gradient(to right, #ff2e4d, #ff758f);
+            transform: scale(1.05) translateY(3px);
+        }
+        
+        .btn-yes:after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .btn-yes:active:after {
+            opacity: 1;
+        }
+        
+        /* Removed audio-controls section - no longer needed */
+        
+        .footer {
+            margin-top: 25px;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        .hearts-count {
+            margin-top: 15px;
+            font-size: 1rem;
+            color: #ff4d6d;
+            font-weight: bold;
+        }
+        
+        /* Celebration overlay */
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+        
+        .celebration-heart {
+            position: absolute;
+            font-size: 25px;
+            animation: celebrate 2s linear forwards;
+        }
+        
+        @keyframes celebrate {
+            0% {
+                transform: translateY(100vh) rotate(0deg) scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) rotate(720deg) scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        /* Landscape orientation */
+        @media (orientation: landscape) and (max-height: 600px) {
+            .container {
+                padding: 20px 25px;
+                max-height: 90vh;
+                overflow-y: auto;
+            }
+            
+            h1 {
+                font-size: 2rem;
+                margin-bottom: 10px;
+            }
+            
+            .message {
+                font-size: 1rem;
+                margin-bottom: 20px;
+            }
+            
+            .btn {
+                padding: 18px 20px;
+                font-size: 1.2rem;
+                min-height: 60px;
+            }
+        }
+        
+        /* Tablet and larger phones */
+        @media (min-width: 500px) {
+            .buttons-container {
+                flex-direction: row;
+                justify-content: center;
+                gap: 25px;
+            }
+            
+            .btn {
+                min-width: 180px;
+            }
+        }
+        
+        /* Large screens */
+        @media (min-width: 768px) {
+            h1 {
+                font-size: 3rem;
+            }
+            
+            .message {
+                font-size: 1.3rem;
+            }
+            
+            .btn {
+                padding: 20px 40px;
+                font-size: 1.5rem;
+            }
+            
+            .btn:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 12px 20px rgba(0, 0, 0, 0.15);
+            }
+            
+            .btn:active {
+                transform: translateY(0);
+            }
+            
+            .btn-yes:hover {
+                transform: scale(1.05) translateY(-5px);
+            }
+            
+            .btn-yes:hover:after {
+                opacity: 1;
+            }
+        }
+        
+        /* Prevent text selection on mobile */
+        .no-select {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+    </style>
+</head>
+<body class="no-select">
+    <!-- Floating hearts will be generated here -->
+    
+    <!-- Celebration overlay -->
+    <div class="celebration" id="celebration"></div>
+    
+    <div class="container">
+        <h1><i class="fas fa-heart"></i> Will You Be My Valentine? <i class="fas fa-heart"></i></h1>
+        
+        <div class="message">
+            <p>My dearest, from the moment I met you, my world has been filled with colors I never knew existed. You've brought so much joy, laughter, and love into my life.</p>
+            <p>Today, on this special day dedicated to love, I want to ask you something very important...</p>
+            <p style="margin-top: 20px; font-weight: bold; color: #ff4d6d; font-size: 1.5rem;">Will you do me the honor of being my Valentine?</p>
+        </div>
+        
+        <div class="buttons-container">
+            <button class="btn btn-yes" id="yesBtn">
+                <i class="fas fa-heart"></i> YES! <i class="fas fa-heart"></i>
+            </button>
+            <button class="btn btn-no" id="noBtn">
+                <i class="fas fa-times-circle"></i> No
+            </button>
+        </div>
+        
+        <!-- Audio control buttons have been removed as requested -->
+        
+        <div class="hearts-count" id="heartsCount">Hearts: 0</div>
+        
+        <div class="footer">
+            <p>Made with <i class="fas fa-heart" style="color: #ff4d6d;"></i> for someone very special</p>
+        </div>
+    </div>
+
+    <!-- Audio elements are kept but without UI controls (no buttons to trigger them) -->
+    <audio id="celebrationSound" preload="auto">
+        <source src="https://assets.codepen.io/1468070/celebration-sound.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Mobile-optimized JavaScript
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const heartsContainer = document.body;
+            let heartsCreated = 0;
+            const heartsCountElement = document.getElementById('heartsCount');
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+            const celebrationEl = document.getElementById('celebration');
+            
+            // Audio elements (only celebration sound kept, no music/voice)
+            const celebrationSound = document.getElementById('celebrationSound');
+            
+            // Preload audio for better mobile experience
+            if (celebrationSound) celebrationSound.load();
+            
+            // Create floating hearts
+            function createHeart() {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                
+                // Random position
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                heart.style.left = `${posX}%`;
+                heart.style.top = `${posY}%`;
+                
+                // Random size (slightly smaller for mobile)
+                const size = Math.random() * 25 + 15;
+                heart.style.fontSize = `${size}px`;
+                
+                // Random animation duration
+                const duration = Math.random() * 8 + 8;
+                heart.style.animationDuration = `${duration}s`;
+                
+                // Random color
+                const colors = ['#ff4d6d', '#ff8fa3', '#ffafcc', '#ff2e4d', '#c9184a'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                heart.style.color = randomColor;
+                
+                heartsContainer.appendChild(heart);
+                heartsCreated++;
+                heartsCountElement.textContent = `Hearts: ${heartsCreated}`;
+                
+                // Remove heart after animation completes
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.parentNode.removeChild(heart);
+                    }
+                }, duration * 1000);
+            }
+            
+            // Create hearts periodically
+            setInterval(createHeart, 400);
+            
+            // Create initial hearts
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => createHeart(), i * 150);
+            }
+            
+            // Create celebration hearts
+            function createCelebrationHeart(x, y) {
+                const heart = document.createElement('div');
+                heart.classList.add('celebration-heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = `${x}px`;
+                heart.style.top = `${y}px`;
+                
+                // Random color
+                const colors = ['#ff4d6d', '#ff8fa3', '#ffafcc', '#ff2e4d', '#c9184a'];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                heart.style.color = randomColor;
+                
+                // Random size
+                const size = 20 + Math.random() * 30;
+                heart.style.fontSize = `${size}px`;
+                
+                celebrationEl.appendChild(heart);
+                
+                // Remove after animation
+                setTimeout(() => {
+                    if (heart.parentNode) {
+                        heart.parentNode.removeChild(heart);
+                    }
+                }, 2000);
+            }
+            
+            // Yes button - show celebration
+            yesBtn.addEventListener('click', function() {
+                // Change background to celebration mode
+                document.body.style.background = 'linear-gradient(135deg, #ffafcc, #ffc8dd, #cdb4db, #a2d2ff, #bde0fe)';
+                
+                // Show celebration overlay
+                celebrationEl.style.display = 'block';
+                
+                // Create explosion of hearts
+                for (let i = 0; i < 30; i++) {
+                    setTimeout(() => {
+                        const x = Math.random() * window.innerWidth;
+                        const y = Math.random() * window.innerHeight;
+                        createCelebrationHeart(x, y);
+                    }, i * 50);
+                }
+                
+                // Show message
+                const message = document.querySelector('.message');
+                message.innerHTML = `
+                    <h2 style="color: #ff4d6d; font-size: 1.8rem; margin-bottom: 15px;">YAY! You made me the happiest! 💖</h2>
+                    <p style="font-size: 1.3rem;">I promise to make this Valentine's Day unforgettable!</p>
+                    <p style="margin-top: 15px; font-size: 1.1rem;">Get ready for the most romantic day! 🌹</p>
+                `;
+                
+                // Play celebration sound if available
+                try {
+                    if (celebrationSound) {
+                        celebrationSound.play().catch(e => {
+                            console.log("Celebration sound error:", e);
+                        });
+                    }
+                } catch(e) {
+                    console.log("Celebration audio error:", e);
+                }
+                
+                // Change button text
+                yesBtn.innerHTML = '<i class="fas fa-heart"></i> I\'M SO HAPPY! <i class="fas fa-heart"></i>';
+                yesBtn.style.transform = 'scale(1.05)';
+                yesBtn.style.background = 'linear-gradient(to right, #ff2e4d, #ff006e)';
+                
+                // Remove no button
+                noBtn.style.display = 'none';
+                
+                // Hide celebration after 5 seconds
+                setTimeout(() => {
+                    celebrationEl.style.display = 'none';
+                }, 5000);
+            });
+            
+            // No button - run away effect (touch for mobile)
+            noBtn.addEventListener('touchstart', handleNoButton);
+            noBtn.addEventListener('mouseover', handleNoButton);
+            
+            function handleNoButton(e) {
+                if (e.type === 'touchstart') {
+                    e.preventDefault();
+                }
+                
+                // Calculate random position within viewport
+                const container = document.querySelector('.container');
+                const containerRect = container.getBoundingClientRect();
+                
+                // Button dimensions
+                const buttonWidth = noBtn.offsetWidth;
+                const buttonHeight = noBtn.offsetHeight;
+                
+                // Calculate safe area (within container)
+                const maxX = containerRect.width - buttonWidth - 20;
+                const maxY = containerRect.height - buttonHeight - 20;
+                
+                // Generate random position
+                const randomX = Math.random() * maxX;
+                const randomY = Math.random() * maxY;
+                
+                // Apply new position
+                noBtn.style.position = 'absolute';
+                noBtn.style.left = `${randomX}px`;
+                noBtn.style.top = `${randomY}px`;
+                
+                // Change button text sometimes
+                const messages = [
+                    "Are you sure?",
+                    "Think again!",
+                    "Maybe reconsider?",
+                    "You don't mean that!",
+                    "Please say yes!",
+                    "I'll keep asking!",
+                    "Try again!",
+                    "You can't resist!"
+                ];
+                const randomMessage = messages[Math.floor(Math.random() * messages.length)];
+                noBtn.innerHTML = `<i class="fas fa-times-circle"></i> ${randomMessage}`;
+                
+                // Change color
+                const colors = [
+                    'linear-gradient(to right, #4361ee, #3a0ca3)',
+                    'linear-gradient(to right, #f72585, #b5179e)',
+                    'linear-gradient(to right, #4cc9f0, #4361ee)',
+                    'linear-gradient(to right, #7209b7, #560bad)'
+                ];
+                const randomColor = colors[Math.floor(Math.random() * colors.length)];
+                noBtn.style.background = randomColor;
+                
+                // Make YES button pulse
+                yesBtn.style.animation = 'pulse 0.5s ease';
+                setTimeout(() => {
+                    yesBtn.style.animation = '';
+                }, 500);
+            }
+            
+            // Add pulse animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            // Add click event to no button (just in case someone actually clicks it)
+            noBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                alert("Hmm, I think you meant to click YES! Let me help you with that...");
+                yesBtn.style.transform = "scale(1.1)";
+                setTimeout(() => {
+                    yesBtn.style.transform = "scale(1)";
+                }, 500);
+            });
+            
+            // Handle orientation change
+            window.addEventListener('orientationchange', function() {
+                // Reset no button position on rotation
+                noBtn.style.position = 'relative';
+                noBtn.style.left = 'auto';
+                noBtn.style.top = 'auto';
+                noBtn.style.background = 'linear-gradient(to right, #4361ee, #3a0ca3)';
+                noBtn.innerHTML = '<i class="fas fa-times-circle"></i> No';
+            });
+            
+            // Handle resize for responsive no button reset (mobile landscape)
+            let resizeTimeout;
+            window.addEventListener('resize', function() {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(function() {
+                    // Only reset if no button is still visible
+                    if (noBtn.style.display !== 'none') {
+                        noBtn.style.position = 'relative';
+                        noBtn.style.left = 'auto';
+                        noBtn.style.top = 'auto';
+                        noBtn.style.background = 'linear-gradient(to right, #4361ee, #3a0ca3)';
+                        noBtn.innerHTML = '<i class="fas fa-times-circle"></i> No';
+                    }
+                }, 200);
+            });
+            
+            // Prevent context menu on long press
+            document.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+            });
+            
+            // Add a gentle floating effect to the container on mobile
+            let touchStartY = 0;
+            document.querySelector('.container').addEventListener('touchstart', function(e) {
+                touchStartY = e.touches[0].clientY;
+            });
+            
+            document.querySelector('.container').addEventListener('touchmove', function(e) {
+                const touchY = e.touches[0].clientY;
+                const diff = touchY - touchStartY;
+                if (Math.abs(diff) > 50) {
+                    // Just a subtle visual feedback - no action needed
+                    this.style.transform = `translateY(${diff * 0.05}px)`;
+                }
+            });
+            
+            document.querySelector('.container').addEventListener('touchend', function() {
+                this.style.transform = '';
+            });
+        });
+    </script>
+</body>
+</html>
